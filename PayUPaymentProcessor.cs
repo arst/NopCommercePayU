@@ -261,6 +261,7 @@ namespace Nop.Plugin.Payments.Payu
                 OAuthClientId = ""
             };
             this._settingService.SaveSetting<PayuPaymentSettings>(settings, 0);
+            LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.PayU.Instructions", "");
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.RedirectionTip", "You will be redirected to Payu site to complete the order.");
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.PosId", "PoS ID");
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.PosId.Hint", "Enter PoS ID provided by PayU.");
@@ -277,6 +278,7 @@ namespace Nop.Plugin.Payments.Payu
 
         public override void Uninstall()
         {
+            LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.PayU.Instructions");
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.RedirectionTip");
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.PosId");
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.PosId.Hint");

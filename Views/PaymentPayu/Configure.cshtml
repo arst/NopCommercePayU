@@ -5,62 +5,64 @@
 @using Nop.Plugin.Payments.PayU.Models;
 @using Nop.Web.Framework;
 
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+
 @using (Html.BeginForm())
-{   
+{
     @Html.AntiForgeryToken()
-    <table class="adminContent">
-        <tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.NopLabelFor(model => model.PosId):
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.PosId)
-                    @Html.ValidationMessageFor(model => model.PosId)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.NopLabelFor(model => model.OAuthClientId):
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.OAuthClientId)
-                    @Html.ValidationMessageFor(model => model.OAuthClientId)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.NopLabelFor(model => model.OAuthClientSecret):
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.OAuthClientSecret)
-                    @Html.ValidationMessageFor(model => model.OAuthClientSecret)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.NopLabelFor(model => model.SecondKey):
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.SecondKey)
-                    @Html.ValidationMessageFor(model => model.SecondKey)
-                </td>
-            </tr>
-            <tr>
-                <td class="adminTitle">
-                    @Html.NopLabelFor(model => model.BaseUrl):
-                </td>
-                <td class="adminData">
-                    @Html.EditorFor(model => model.BaseUrl)
-                    @Html.ValidationMessageFor(model => model.BaseUrl)
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" width="100%">
-                    <button type="submit" name="save" value="save" class="t-button">
-                        Save</button>
-                </td>
-            </tr>
-    </table>
-    
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @T("Plugins.Payments.PayU.Instructions")
+                <div class="form-group">
+                    <div class="col-md-3">
+                       @Html.NopLabelFor(model => model.PosId)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.PosId)
+                        @Html.ValidationMessageFor(model => model.PosId)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.OAuthClientId)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.OAuthClientId)
+                        @Html.ValidationMessageFor(model => model.OAuthClientId)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.OAuthClientSecret)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.OAuthClientSecret)
+                        @Html.ValidationMessageFor(model => model.OAuthClientSecret)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.SecondKey)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.SecondKey)
+                        @Html.ValidationMessageFor(model => model.SecondKey)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.BaseUrl)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.EditorFor(model => model.BaseUrl)
+                        @Html.ValidationMessageFor(model => model.BaseUrl)
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
 }
