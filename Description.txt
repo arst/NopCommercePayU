@@ -1,0 +1,8 @@
+Group: Payment methods
+FriendlyName: Payu
+SystemName: Payments.Payu
+Version: 3.90
+SupportedVersions: 3.90
+Author: --
+DisplayOrder: 1
+FileName: Nop.Plugin.Payments.Payu.dll
