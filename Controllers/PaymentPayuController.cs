@@ -132,9 +132,24 @@ namespace Nop.Plugin.Payments.Payu.Controllers
             string merchantId = this._PayuPaymentSettings.PosId;
             int localOrderNumber = Convert.ToInt32(notification.Order.ExtOrderId);
             Order order = this._orderService.GetOrderById(localOrderNumber);
-            if (this._orderProcessingService.CanMarkOrderAsPaid(order))
+
+            switch (notification.Order.Status)
             {
-                this._orderProcessingService.MarkOrderAsPaid(order);
+                case "COMPLETED":
+                    if (this._orderProcessingService.CanMarkOrderAsPaid(order))
+                    {
+                        this._orderProcessingService.MarkOrderAsPaid(order);
+                    }
+                    break;
+                case "REJECTED":
+                case "CANCELED":
+                    if (this._orderProcessingService.CanCancelOrder(order))
+                    {
+                        this._orderProcessingService.CancelOrder(order, true);
+                    }
+                    break;
+                default:
+                    break;
             }
 
             return new HttpStatusCodeResult(200);

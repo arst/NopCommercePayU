@@ -16,6 +16,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Security;
 using System.Web;
 using System.Web.Routing;
 
@@ -117,7 +118,35 @@ namespace Nop.Plugin.Payments.Payu
         }
 
         public void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
-        {            
+        {
+            if (String.IsNullOrEmpty(this._PayuPaymentSettings.BaseUrl))
+            {
+                throw new ArgumentNullException("You must setup base url for PayU before use this payment method");
+            }
+
+            if (String.IsNullOrEmpty(this._PayuPaymentSettings.OAuthClientSecret))
+            {
+                throw new ArgumentNullException("You must setup oauth client secret before using this payment method");
+            }
+
+
+            if (String.IsNullOrEmpty(this._PayuPaymentSettings.OAuthClientId))
+            {
+                throw new ArgumentNullException("You must setup oauth client id before using this payment method");
+            }
+
+
+            if (String.IsNullOrEmpty(this._PayuPaymentSettings.PosId))
+            {
+                throw new ArgumentNullException("You must setup  PoS ID before using this payment method");
+            }
+
+
+            if (String.IsNullOrEmpty(this._PayuPaymentSettings.SecondKey))
+            {
+                throw new ArgumentNullException("You must setup second key(md5) before using this payment method");
+            }
+
             RestClient cl = new RestClient(this._PayuPaymentSettings.BaseUrl.TrimEnd('/') + "/api/v2_1/");
             cl.FollowRedirects = false;
             var request = new RestRequest("orders", Method.POST);
@@ -156,6 +185,10 @@ namespace Nop.Plugin.Payments.Payu
             securityRequest.AddParameter("client_secret", this._PayuPaymentSettings.OAuthClientSecret);
             var response = securityClient.Execute<PayUAuthorizationResponse>(securityRequest);
             var accToken = response.Data.Access_token;
+            if (String.IsNullOrEmpty(accToken))
+            {
+                throw new SecurityException("PayU can't generate bearer token. Check payment method setting or contact responsible person.");
+            }
             request.AddHeader("Authorization", "Bearer " + accToken);
             var orderResponse = cl.Post<PayUOrderResponse>(request);
             HttpContext.Current.Response.Redirect(orderResponse.Data.redirectUri);
