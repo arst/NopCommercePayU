@@ -57,7 +57,8 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                 OAuthClientSecret = this._PayuPaymentSettings.OAuthClientSecret,
                 OAuthClientId = this._PayuPaymentSettings.OAuthClientId,
                 BaseUrl = this._PayuPaymentSettings.BaseUrl,
-                SecondKey = this._PayuPaymentSettings.SecondKey
+                SecondKey = this._PayuPaymentSettings.SecondKey,
+                AdditionalFee = this._PayuPaymentSettings.AdditionalFee
             });
         }
 
