@@ -40,5 +40,12 @@ namespace Nop.Plugin.Payments.PayU.Models
             get;
             set;
         }
+
+        [NopResourceDisplayName("Plugins.Payments.Payu.AdditionalFee")]
+        public int AdditionalFee
+        {
+            get;
+            set;
+        }
     }
 }

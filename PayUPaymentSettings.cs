@@ -34,5 +34,11 @@ namespace Nop.Plugin.Payments.Payu
             get;
             set;
         }
+
+        public int AdditionalFee
+        {
+            get;
+            set;
+        }
     }
 }

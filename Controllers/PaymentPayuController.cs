@@ -76,6 +76,7 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                 this._PayuPaymentSettings.OAuthClientId = model.OAuthClientId;
                 this._PayuPaymentSettings.BaseUrl = model.BaseUrl;
                 this._PayuPaymentSettings.SecondKey = model.SecondKey;
+                this._PayuPaymentSettings.AdditionalFee = model.AdditionalFee;
                 this._settingService.SaveSetting<PayuPaymentSettings>(this._PayuPaymentSettings, 0);
                 result = base.View("~/Plugins/Payments.Payu/Views/PaymentPayu/Configure.cshtml", model);
             }

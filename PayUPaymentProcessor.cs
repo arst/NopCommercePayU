@@ -197,7 +197,7 @@ namespace Nop.Plugin.Payments.Payu
 
         public decimal GetAdditionalHandlingFee(IList<ShoppingCartItem> cart)
         {
-            return 0;
+            return this._PayuPaymentSettings.AdditionalFee;
         }
 
         public CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
@@ -306,6 +306,8 @@ namespace Nop.Plugin.Payments.Payu
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.BaseUrl.Hint", "Enter PayU payment service base URL.");
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.OAuthClientSecret", "OAuth Client Secret");
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.OAuthClientSecret.Hint", "Enter OAuth Client Secret provided by PayU.");
+            LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.AdditionalFee", "Additional Fee");
+            LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.AdditionalFee.Hint", "Enter Additional.");
             base.Install();
         }
 
@@ -323,6 +325,8 @@ namespace Nop.Plugin.Payments.Payu
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.BaseUrl.Hint");
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.OAuthClientSecret");
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.OAuthClientSecret.Hint");
+            LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.AdditionalFee");
+            LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.AdditionalFee.Hint");
             base.Uninstall();
         }
     }
