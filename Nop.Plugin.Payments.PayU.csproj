@@ -66,6 +66,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\Refund\RefundRequest.cs" />
+    <Compile Include="Api\Refund\RefundResponse.cs" />
+    <Compile Include="Api\Refund\RefundStatus.cs" />
     <Compile Include="Infrastructure\CamelCaseJsonSerializerStrategy.cs" />
     <Compile Include="Infrastructure\HttpRequestBaseExtensions.cs" />
     <Compile Include="Models\ConfigurationModel.cs" />
@@ -78,7 +81,6 @@
     <Compile Include="Api\Payment\PayUOrderNotification.cs" />
     <Compile Include="Api\Payment\PayUOrderResponse.cs" />
     <Compile Include="Api\Payment\PayUProduct.cs" />
-    <Compile Include="PayUHelper.cs" />
     <Compile Include="PayUPaymentProcessor.cs" />
     <Compile Include="PayUPaymentSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

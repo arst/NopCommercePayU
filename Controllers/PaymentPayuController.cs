@@ -126,7 +126,7 @@ namespace Nop.Plugin.Payments.Payu.Controllers
             {
                 throw new NopException("Payu payments module cannot be loaded");
             }
-            PayuHelper myUtility = new PayuHelper();
+
             if (String.IsNullOrEmpty(this._PayuPaymentSettings.OAuthClientSecret))
             {
                 throw new NopException("Payu can't be null or empty");
@@ -140,6 +140,8 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                 case "COMPLETED":
                     if (this._orderProcessingService.CanMarkOrderAsPaid(order))
                     {
+                        order.AuthorizationTransactionId = notification.Order.OrderId;
+                        this._orderService.UpdateOrder(order);
                         this._orderProcessingService.MarkOrderAsPaid(order);
                     }
                     break;
@@ -147,6 +149,8 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                 case "CANCELED":
                     if (this._orderProcessingService.CanCancelOrder(order))
                     {
+                        order.AuthorizationTransactionId = notification.Order.OrderId;
+                        this._orderService.UpdateOrder(order);
                         this._orderProcessingService.CancelOrder(order, true);
                     }
                     break;

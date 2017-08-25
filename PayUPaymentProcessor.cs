@@ -5,11 +5,13 @@ using Nop.Core.Plugins;
 using Nop.Plugin.Payments.Payu.Controllers;
 using Nop.Plugin.Payments.PayU.Api.Authorization;
 using Nop.Plugin.Payments.PayU.Api.Payment;
+using Nop.Plugin.Payments.PayU.Api.Refund;
 using Nop.Plugin.Payments.PayU.Infrastructure;
 using Nop.Plugin.Payments.PayU.Models;
 using Nop.Services.Configuration;
 using Nop.Services.Directory;
 using Nop.Services.Localization;
+using Nop.Services.Logging;
 using Nop.Services.Payments;
 using Nop.Web.Framework;
 using RestSharp;
@@ -34,6 +36,8 @@ namespace Nop.Plugin.Payments.Payu
 
         private readonly IWebHelper _webHelper;
 
+        private readonly ILogger _logger;
+
         public bool SupportCapture
         {
             get
@@ -46,7 +50,7 @@ namespace Nop.Plugin.Payments.Payu
         {
             get
             {
-                return false;
+                return true;
             }
         }
 
@@ -54,7 +58,7 @@ namespace Nop.Plugin.Payments.Payu
         {
             get
             {
-                return false;
+                return true;
             }
         }
 
@@ -70,7 +74,7 @@ namespace Nop.Plugin.Payments.Payu
         {
             get
             {
-                return 0;
+                return RecurringPaymentType.NotSupported;
             }
         }
 
@@ -97,13 +101,14 @@ namespace Nop.Plugin.Payments.Payu
 
         public string PaymentMethodDescription => "PayU";
 
-        public PayuPaymentProcessor(PayuPaymentSettings PayuPaymentSettings, ISettingService settingService, ICurrencyService currencyService, CurrencySettings currencySettings, IWebHelper webHelper)
+        public PayuPaymentProcessor(PayuPaymentSettings PayuPaymentSettings, ISettingService settingService, ICurrencyService currencyService, CurrencySettings currencySettings, IWebHelper webHelper, ILogger _logger)
         {
             this._PayuPaymentSettings = PayuPaymentSettings;
             this._settingService = settingService;
             this._currencyService = currencyService;
             this._currencySettings = currencySettings;
             this._webHelper = webHelper;
+            this._logger = _logger;
         }
 
         public ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
@@ -178,17 +183,7 @@ namespace Nop.Plugin.Payments.Payu
             }
             order.products = products;
             request.AddParameter("application/json; charset=utf-8", request.JsonSerializer.Serialize(order), ParameterType.RequestBody);
-            var securityClient = new RestClient(this._PayuPaymentSettings.BaseUrl.TrimEnd('/')  + "/pl/standard/user/oauth");
-            var securityRequest = new RestRequest("authorize", Method.POST);
-            securityRequest.AddParameter("grant_type", "client_credentials");
-            securityRequest.AddParameter("client_id", this._PayuPaymentSettings.PosId);
-            securityRequest.AddParameter("client_secret", this._PayuPaymentSettings.OAuthClientSecret);
-            var response = securityClient.Execute<PayUAuthorizationResponse>(securityRequest);
-            var accToken = response.Data.Access_token;
-            if (String.IsNullOrEmpty(accToken))
-            {
-                throw new SecurityException("PayU can't generate bearer token. Check payment method setting or contact responsible person.");
-            }
+            var accToken = this.GetAuthToken();
             request.AddHeader("Authorization", "Bearer " + accToken);
             var orderResponse = cl.Post<PayUOrderResponse>(request);
             HttpContext.Current.Response.Redirect(orderResponse.Data.redirectUri);
@@ -209,8 +204,30 @@ namespace Nop.Plugin.Payments.Payu
 
         public RefundPaymentResult Refund(RefundPaymentRequest refundPaymentRequest)
         {
+            var securityClient = new RestClient(this._PayuPaymentSettings.BaseUrl.TrimEnd('/') + "/pl/standard/user/oauth");
             RefundPaymentResult result = new RefundPaymentResult();
-            result.AddError("Refund method not supported");
+            var accToken = this.GetAuthToken();
+            RestClient cl = new RestClient(this._PayuPaymentSettings.BaseUrl.TrimEnd('/') + String.Format("/api/v2_1/orders/{0}/refunds", refundPaymentRequest.Order.AuthorizationTransactionId));
+            RestRequest refundRequest = new RestRequest();
+            RefundRequest refund = new RefundRequest();
+            if (refundPaymentRequest.IsPartialRefund)
+            {
+                refund.Amount = refundPaymentRequest.AmountToRefund.ToString();
+            }
+            refundRequest.AddParameter("application/json; charset=utf-8", refundRequest.JsonSerializer.Serialize(refund), ParameterType.RequestBody);
+            refundRequest.AddHeader("Authorization", "Bearer " + accToken);
+            var refundResult = cl.Execute<RefundResponse>(refundRequest);
+
+            if (refundResult.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                _logger.Error("Can't process refund with PayU payment, reason: " + refundResult.Data.Status.StatusCode);
+                result.Errors.Add(refundResult.Data.Status.StatusDescription);
+            }
+            else
+            {
+                result.NewPaymentStatus = Core.Domain.Payments.PaymentStatus.Refunded;
+            }
+
             return result;
         }
 
@@ -328,6 +345,24 @@ namespace Nop.Plugin.Payments.Payu
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.AdditionalFee");
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.AdditionalFee.Hint");
             base.Uninstall();
+        }
+
+        private string GetAuthToken()
+        {
+            var securityClient = new RestClient(this._PayuPaymentSettings.BaseUrl.TrimEnd('/') + "/pl/standard/user/oauth");
+            RefundPaymentResult result = new RefundPaymentResult();
+            var securityRequest = new RestRequest("authorize", Method.POST);
+            securityRequest.AddParameter("grant_type", "client_credentials");
+            securityRequest.AddParameter("client_id", this._PayuPaymentSettings.PosId);
+            securityRequest.AddParameter("client_secret", this._PayuPaymentSettings.OAuthClientSecret);
+            var response = securityClient.Execute<PayUAuthorizationResponse>(securityRequest);
+            var accToken = response.Data.Access_token;
+            if (String.IsNullOrEmpty(accToken))
+            {
+                throw new SecurityException("PayU can't generate bearer token. Check payment method setting or contact responsible person.");
+            }
+
+            return accToken;
         }
     }
 }
