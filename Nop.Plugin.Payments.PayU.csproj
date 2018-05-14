@@ -33,6 +33,9 @@
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\ElectoMoveShop\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\RestSharp.105.2.3\lib\net452\RestSharp.dll</HintPath>
     </Reference>
@@ -66,19 +69,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Infrastructure\MD5HashManager.cs" />
+    <Compile Include="Integration\Refund\RefundRequest.cs" />
+    <Compile Include="Integration\Refund\RefundResponse.cs" />
+    <Compile Include="Integration\Refund\RefundStatus.cs" />
     <Compile Include="Infrastructure\CamelCaseJsonSerializerStrategy.cs" />
     <Compile Include="Infrastructure\HttpRequestBaseExtensions.cs" />
     <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="Controllers\PaymentPayuController.cs" />
-    <Compile Include="Models\PaymentInfoModel.cs" />
-    <Compile Include="Api\Authorization\PayUAuthorizationResponse.cs" />
-    <Compile Include="Api\Payment\PayUBuyer.cs" />
-    <Compile Include="Api\Payment\PayUNotificationOrder.cs" />
-    <Compile Include="Api\Payment\PayUOrder.cs" />
-    <Compile Include="Api\Payment\PayUOrderNotification.cs" />
-    <Compile Include="Api\Payment\PayUOrderResponse.cs" />
-    <Compile Include="Api\Payment\PayUProduct.cs" />
-    <Compile Include="PayUHelper.cs" />
+    <Compile Include="Integration\Authorization\PayUAuthorizationResponse.cs" />
+    <Compile Include="Integration\Payment\PayUBuyer.cs" />
+    <Compile Include="Integration\Payment\PayUNotificationOrder.cs" />
+    <Compile Include="Integration\Payment\PayUOrder.cs" />
+    <Compile Include="Integration\Payment\PayUOrderNotification.cs" />
+    <Compile Include="Integration\Payment\PayUOrderResponse.cs" />
+    <Compile Include="Integration\Payment\PayUProduct.cs" />
     <Compile Include="PayUPaymentProcessor.cs" />
     <Compile Include="PayUPaymentSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

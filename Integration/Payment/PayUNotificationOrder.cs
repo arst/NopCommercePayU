@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nop.Plugin.Payments.PayU.Api.Payment
+namespace Nop.Plugin.Payments.PayU.Integration.Payment
 {
     public class PayUNotificationOrder
     {

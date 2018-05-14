@@ -1,23 +1,23 @@
-﻿using Nop.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Security;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using Nop.Core;
 using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Payments;
-using Nop.Plugin.Payments.PayU.Models;
 using Nop.Plugin.Payments.PayU.Infrastructure;
+using Nop.Plugin.Payments.PayU.Integration.Payment;
+using Nop.Plugin.Payments.PayU.Models;
 using Nop.Services.Configuration;
 using Nop.Services.Logging;
 using Nop.Services.Orders;
 using Nop.Services.Payments;
 using Nop.Web.Framework.Controllers;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using System.Security.Cryptography;
-using System.Text;
-using System.Security;
-using Nop.Plugin.Payments.PayU.Api.Payment;
 
 namespace Nop.Plugin.Payments.Payu.Controllers
 {
@@ -57,7 +57,8 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                 OAuthClientSecret = this._PayuPaymentSettings.OAuthClientSecret,
                 OAuthClientId = this._PayuPaymentSettings.OAuthClientId,
                 BaseUrl = this._PayuPaymentSettings.BaseUrl,
-                SecondKey = this._PayuPaymentSettings.SecondKey
+                SecondKey = this._PayuPaymentSettings.SecondKey,
+                AdditionalFee = this._PayuPaymentSettings.AdditionalFee
             });
         }
 
@@ -86,8 +87,7 @@ namespace Nop.Plugin.Payments.Payu.Controllers
         [ChildActionOnly]
         public ActionResult PaymentInfo()
         {
-            PaymentInfoModel model = new PaymentInfoModel();
-            return base.View("~/Plugins/Payments.Payu/Views/PaymentPayu/PaymentInfo.cshtml", model);
+            return base.View("~/Plugins/Payments.Payu/Views/PaymentPayu/PaymentInfo.cshtml");
         }
 
         [NonAction]
@@ -106,29 +106,21 @@ namespace Nop.Plugin.Payments.Payu.Controllers
         public async Task<HttpStatusCodeResult> Return(PayUOrderNotification notification)
         {
             PayuPaymentProcessor processor = this._paymentService.LoadPaymentMethodBySystemName("Payments.Payu") as PayuPaymentProcessor;
-            var match = Regex.Match(Request.Headers.Get("OpenPayu-Signature"), "(signature=)([A-z,0-9]*)");
-            var signature = match.Groups[2].Value;
-            this._logger.Error("PayU signature: " + signature);
-            var requestBody = await Request.GetBody();
-            this._logger.Error("RequestBody: " + requestBody);
-            var verificationString = String.Concat(requestBody, _PayuPaymentSettings.SecondKey);
-            using (MD5 md5Hash = MD5.Create())
-            {
-                if (!VerifyMd5Hash(md5Hash, verificationString, signature))
-                {
-                    throw new SecurityException("Signatures don't match.");
-                }
-            }
-            
-            
-            if (processor == null || !PaymentExtensions.IsPaymentMethodActive(processor, this._paymentSettings) || !processor.PluginDescriptor.Installed)
+
+            var signature = this.ExtractPayUSignature(Request.Headers);
+           
+            await this.VerifyRequest(Request, signature);
+
+            if (processor == null || 
+                !PaymentExtensions.IsPaymentMethodActive(processor, this._paymentSettings) || 
+                !processor.PluginDescriptor.Installed)
             {
                 throw new NopException("Payu payments module cannot be loaded");
             }
-            PayuHelper myUtility = new PayuHelper();
+
             if (String.IsNullOrEmpty(this._PayuPaymentSettings.OAuthClientSecret))
             {
-                throw new NopException("Payu can't be null or empty");
+                throw new NopException("Payu client secret can't be null or empty");
             }
             string merchantId = this._PayuPaymentSettings.PosId;
             int localOrderNumber = Convert.ToInt32(notification.Order.ExtOrderId);
@@ -139,6 +131,8 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                 case "COMPLETED":
                     if (this._orderProcessingService.CanMarkOrderAsPaid(order))
                     {
+                        order.AuthorizationTransactionId = notification.Order.OrderId;
+                        this._orderService.UpdateOrder(order);
                         this._orderProcessingService.MarkOrderAsPaid(order);
                     }
                     break;
@@ -146,6 +140,8 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                 case "CANCELED":
                     if (this._orderProcessingService.CanCancelOrder(order))
                     {
+                        order.AuthorizationTransactionId = notification.Order.OrderId;
+                        this._orderService.UpdateOrder(order);
                         this._orderProcessingService.CancelOrder(order, true);
                     }
                     break;
@@ -156,32 +152,27 @@ namespace Nop.Plugin.Payments.Payu.Controllers
             return new HttpStatusCodeResult(200);
         }
 
-        private bool VerifyMd5Hash(MD5 md5Hash, string input, string hash)
+        private async Task VerifyRequest(HttpRequestBase request, string signature)
         {
-            string hashOfInput = GetMd5Hash(md5Hash, input);
-            StringComparer comparer = StringComparer.OrdinalIgnoreCase;
+            var requestBody = await Request.GetBody();
+            var verificationString = String.Concat(requestBody, _PayuPaymentSettings.SecondKey);
 
-            if (0 == comparer.Compare(hashOfInput, hash))
+            using (MD5 md5Hash = MD5.Create())
             {
-                return true;
-            }
-            else
-            {
-                return false;
+                if (!MD5HashManager.VerifyMd5Hash(md5Hash, verificationString, signature))
+                {
+                    throw new SecurityException("Signatures don't match.");
+                }
             }
         }
 
-        private string GetMd5Hash(MD5 md5Hash, string input)
+        private string ExtractPayUSignature(NameValueCollection headers)
         {
-            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
-            StringBuilder sBuilder = new StringBuilder();
+            const int signaturePosition = 2;
+            var match = Regex.Match(Request.Headers.Get("OpenPayu-Signature"), "(signature=)([A-z,0-9]*)");
+            var signature = match.Groups[signaturePosition].Value;
 
-            for (int i = 0; i < data.Length; i++)
-            {
-                sBuilder.Append(data[i].ToString("x2"));
-            }
-            return sBuilder.ToString();
+            return signature;
         }
-
     }
 }
