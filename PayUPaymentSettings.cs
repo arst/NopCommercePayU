@@ -40,5 +40,11 @@ namespace Nop.Plugin.Payments.Payu
             get;
             set;
         }
+
+        public string Currency
+        {
+            get;
+            set;
+        }
     }
 }

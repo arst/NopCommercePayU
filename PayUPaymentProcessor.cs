@@ -141,9 +141,14 @@
         private PayUOrder PreparePayuOrder(PostProcessPaymentRequest postProcessPaymentRequest)
         {
             PayUOrder order = new PayUOrder();
-            order.CurrencyCode = currencyService.GetCurrencyById(currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+            var currencyForPayuOrder = currencyService.GetCurrencyByCode(payuPaymentSettings.Currency);
+
+            if (currencyForPayuOrder == null)
+            {
+                throw new ArgumentException("Currency for PayU must be present in the store. Please, change settings of your store and/or PayU merchant account to match currencies between PayU and your store.");
+            }
+            order.CurrencyCode = currencyForPayuOrder.CurrencyCode;
             order.CustomerIp = webHelper.GetCurrentIpAddress();
-            
             order.Description = String.Concat("Order from ", GetStoreName());
             order.ExtOrderId = postProcessPaymentRequest.Order.Id.ToString();
             order.MerchantPosId = payuPaymentSettings.PosId;
@@ -190,6 +195,11 @@
 
         private void ValidatePaymentSettings()
         {
+            if (String.IsNullOrEmpty(payuPaymentSettings.Currency))
+            {
+                throw new ArgumentNullException("You must setup currency for PayU before use this payment method");
+            }
+
             if (String.IsNullOrEmpty(payuPaymentSettings.BaseUrl))
             {
                 throw new ArgumentNullException("You must setup base url for PayU before use this payment method");
@@ -374,6 +384,8 @@
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.OAuthClientSecret.Hint", "Enter OAuth Client Secret provided by PayU.");
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.AdditionalFee", "Additional Fee");
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.AdditionalFee.Hint", "Enter Additional.");
+            LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.Currency", "Your shop currency from PayU");
+            LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.Currency.Hint", "Enter currency code from your PayU account");
             base.Install();
         }
 
@@ -393,6 +405,8 @@
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.OAuthClientSecret.Hint");
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.AdditionalFee");
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.AdditionalFee.Hint");
+            LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.Currency");
+            LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.Currency.Hint");
             base.Uninstall();
         }
 

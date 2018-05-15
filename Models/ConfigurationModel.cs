@@ -47,5 +47,12 @@ namespace Nop.Plugin.Payments.PayU.Models
             get;
             set;
         }
+
+        [NopResourceDisplayName("Plugins.Payments.Payu.Currency")]
+        public string Currency
+        {
+            get;
+            set;
+        }
     }
 }
