@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
 
 namespace Nop.Plugin.Payments.PayU.Infrastructure
@@ -20,6 +16,7 @@ namespace Nop.Plugin.Payments.PayU.Infrastructure
                     documentContents = await readStream.ReadToEndAsync();
                 }
             }
+
             return documentContents;
         }
     }

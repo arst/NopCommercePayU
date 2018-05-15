@@ -11,6 +11,7 @@ using Nop.Core;
 using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Payments;
 using Nop.Plugin.Payments.PayU.Infrastructure;
+using Nop.Plugin.Payments.PayU.Integration;
 using Nop.Plugin.Payments.PayU.Integration.Payment;
 using Nop.Plugin.Payments.PayU.Models;
 using Nop.Services.Configuration;
@@ -128,7 +129,7 @@ namespace Nop.Plugin.Payments.Payu.Controllers
 
             switch (notification.Order.Status)
             {
-                case "COMPLETED":
+                case PayuApiOrderStatusCode.Completed:
                     if (this._orderProcessingService.CanMarkOrderAsPaid(order))
                     {
                         order.AuthorizationTransactionId = notification.Order.OrderId;
@@ -136,8 +137,8 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                         this._orderProcessingService.MarkOrderAsPaid(order);
                     }
                     break;
-                case "REJECTED":
-                case "CANCELED":
+                case PayuApiOrderStatusCode.Rejected:
+                case PayuApiOrderStatusCode.Canceled:
                     if (this._orderProcessingService.CanCancelOrder(order))
                     {
                         order.AuthorizationTransactionId = notification.Order.OrderId;

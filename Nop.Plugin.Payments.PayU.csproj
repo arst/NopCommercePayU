@@ -70,10 +70,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\MD5HashManager.cs" />
+    <Compile Include="Integration\Capture\CaptureOrderRequest.cs" />
+    <Compile Include="Integration\Capture\CaptureOrderResponse.cs" />
+    <Compile Include="Integration\PayuApiOrderStatusCode.cs" />
+    <Compile Include="Integration\PayuApiResponseStatusCode.cs" />
     <Compile Include="Integration\Refund\RefundRequest.cs" />
     <Compile Include="Integration\Refund\RefundResponse.cs" />
     <Compile Include="Integration\Refund\RefundStatus.cs" />
-    <Compile Include="Infrastructure\CamelCaseJsonSerializerStrategy.cs" />
     <Compile Include="Infrastructure\HttpRequestBaseExtensions.cs" />
     <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="Controllers\PaymentPayuController.cs" />

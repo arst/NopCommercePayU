@@ -13,7 +13,9 @@
     using Nop.Core.Plugins;
     using Nop.Plugin.Payments.Payu.Controllers;
     using Nop.Plugin.Payments.PayU.Api.Refund;
+    using Nop.Plugin.Payments.PayU.Integration;
     using Nop.Plugin.Payments.PayU.Integration.Authorization;
+    using Nop.Plugin.Payments.PayU.Integration.Capture;
     using Nop.Plugin.Payments.PayU.Integration.Payment;
     using Nop.Plugin.Payments.PayU.Integration.Refund;
     using Nop.Services.Configuration;
@@ -41,7 +43,7 @@
         {
             get
             {
-                return false;
+                return true;
             }
         }
 
@@ -223,7 +225,29 @@
         public CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
         {
             CapturePaymentResult result = new CapturePaymentResult();
-            result.AddError("Capture method not supported");
+            CaptureOrderRequest request = new CaptureOrderRequest();
+            request.OrderId = capturePaymentRequest.Order.AuthorizationTransactionId;
+            request.OrderStatus = PayuApiOrderStatusCode.Completed;
+
+            var payUApiClient = GetApiClient("api/v2_1");
+            var captureRequest = new RestRequest(String.Format("orders/{0}/status", request.OrderId), Method.PUT);
+            captureRequest.AddHeader("Content-Type", "application/json");
+            captureRequest.AddParameter("application/json; charset=utf-8", captureRequest.JsonSerializer.Serialize(request), ParameterType.RequestBody);
+            var authenticationToken = GetAuthToken();
+            captureRequest.AddHeader("Authorization", String.Concat("Bearer ", authenticationToken));
+
+            var orderResponse = payUApiClient.Put<CaptureOrderResponse>(captureRequest);
+
+            if (orderResponse.Data.StatusCode.Equals(PayuApiResponseStatusCode.Success, StringComparison.OrdinalIgnoreCase))
+            {
+                capturePaymentRequest.Order.CaptureTransactionResult = orderResponse.Data.StatusCode;
+                result.NewPaymentStatus = PaymentStatus.Paid;
+            }
+            else
+            {
+                result.AddError(orderResponse.Data.StatusDesc);
+            }
+
             return result;
         }
 

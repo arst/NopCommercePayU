@@ -1,9 +1,10 @@
 ﻿@{
     Layout = "";
 }
-@model  Nop.Plugin.Payments.PayU.Models.ConfigurationModel
-@using Nop.Plugin.Payments.PayU.Models;
+
 @using Nop.Web.Framework;
+
+@model  Nop.Plugin.Payments.PayU.Models.ConfigurationModel
 
 @Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
 
