@@ -2,7 +2,7 @@
 NopCommerce plugin for PayU(Poland) payment system integration
 
 # NopCommerce version
-Support version 3.80, 3.90
+Support version 3.90
 
 # Features
 1. Redirect payment method

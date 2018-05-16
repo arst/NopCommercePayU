@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Nop.Plugin.Payments.PayU.Integration.Capture
+namespace Nop.Plugin.Payments.PayU.Integration.Models.Capture
 {
-    class CaptureOrderResponse
+    public class PayuCaptureOrderResponse
     {
         [JsonProperty("statusCode")]
         public string StatusCode { get; set; }

@@ -1,6 +1,6 @@
-﻿namespace Nop.Plugin.Payments.PayU.Api.Refund
+﻿namespace Nop.Plugin.Payments.PayU.Integration.Models.Refund
 {
-    public class RefundRequest
+    public class PayuRefundRequest
     {
         public string Description
         {

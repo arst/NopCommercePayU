@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nop.Plugin.Payments.PayU</RootNamespace>
     <AssemblyName>Nop.Plugin.Payments.PayU</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -70,23 +71,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\MD5HashManager.cs" />
-    <Compile Include="Integration\Capture\CaptureOrderRequest.cs" />
-    <Compile Include="Integration\Capture\CaptureOrderResponse.cs" />
-    <Compile Include="Integration\PayuApiOrderStatusCode.cs" />
-    <Compile Include="Integration\PayuApiResponseStatusCode.cs" />
-    <Compile Include="Integration\Refund\RefundRequest.cs" />
-    <Compile Include="Integration\Refund\RefundResponse.cs" />
-    <Compile Include="Integration\Refund\RefundStatus.cs" />
+    <Compile Include="Integration\IPayuRestClientFactory.cs" />
+    <Compile Include="Integration\Models\Capture\PayuCaptureOrderRequest.cs" />
+    <Compile Include="Integration\Models\Capture\PayuCaptureOrderResponse.cs" />
+    <Compile Include="Integration\Models\PayuApiOrderStatusCode.cs" />
+    <Compile Include="Integration\Models\PayuApiResponseStatusCode.cs" />
+    <Compile Include="Integration\Models\Refund\PayuRefundRequest.cs" />
+    <Compile Include="Integration\Models\Refund\PayuRefundResponse.cs" />
+    <Compile Include="Integration\Models\Refund\PayuRefundStatus.cs" />
     <Compile Include="Infrastructure\HttpRequestBaseExtensions.cs" />
+    <Compile Include="Integration\PayuRestClientFactory.cs" />
+    <Compile Include="Integration\Services\IPayuAuthorizationService.cs" />
+    <Compile Include="Integration\Services\IPayuPaymentService.cs" />
+    <Compile Include="Integration\Services\PayuAuthorizationService.cs" />
+    <Compile Include="Integration\Services\PayuPaymentService.cs" />
     <Compile Include="Models\ConfigurationModel.cs" />
     <Compile Include="Controllers\PaymentPayuController.cs" />
-    <Compile Include="Integration\Authorization\PayUAuthorizationResponse.cs" />
-    <Compile Include="Integration\Payment\PayUBuyer.cs" />
-    <Compile Include="Integration\Payment\PayUNotificationOrder.cs" />
-    <Compile Include="Integration\Payment\PayUOrder.cs" />
-    <Compile Include="Integration\Payment\PayUOrderNotification.cs" />
-    <Compile Include="Integration\Payment\PayUOrderResponse.cs" />
-    <Compile Include="Integration\Payment\PayUProduct.cs" />
+    <Compile Include="Integration\Models\Authorization\PayUAuthorizationResponse.cs" />
+    <Compile Include="Integration\Models\Payment\PayUBuyer.cs" />
+    <Compile Include="Integration\Models\Payment\PayUNotificationOrder.cs" />
+    <Compile Include="Integration\Models\Payment\PayUOrder.cs" />
+    <Compile Include="Integration\Models\Payment\PayUOrderNotification.cs" />
+    <Compile Include="Integration\Models\Payment\PayUOrderResponse.cs" />
+    <Compile Include="Integration\Models\Payment\PayUProduct.cs" />
     <Compile Include="PayUPaymentProcessor.cs" />
     <Compile Include="PayUPaymentSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

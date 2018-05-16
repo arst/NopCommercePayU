@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Nop.Plugin.Payments.PayU.Integration.Authorization
+namespace Nop.Plugin.Payments.PayU.Integration.Models.Authorization
 {
     class PayUAuthorizationResponse
     {

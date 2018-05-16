@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Nop.Plugin.Payments.PayU.Integration.Payment
+namespace Nop.Plugin.Payments.PayU.Integration.Models.Payment
 {
     public class PayUProduct
     {

@@ -1,6 +1,6 @@
-﻿namespace Nop.Plugin.Payments.PayU.Integration.Refund
+﻿namespace Nop.Plugin.Payments.PayU.Integration.Models.Refund
 {
-    public class RefundStatus
+    public class PayuRefundStatus
     {
         public string StatusCode { get; set; }
 
