@@ -24,29 +24,29 @@ namespace Nop.Plugin.Payments.Payu.Controllers
 {
     public class PaymentPayuController : BasePaymentController
     {
-        private readonly ISettingService _settingService;
+        private readonly ISettingService settingService;
 
-        private readonly IPaymentService _paymentService;
+        private readonly IPaymentService paymentService;
 
-        private readonly IOrderService _orderService;
+        private readonly IOrderService orderService;
 
-        private readonly IOrderProcessingService _orderProcessingService;
+        private readonly IOrderProcessingService orderProcessingService;
 
-        private readonly PayuPaymentSettings _PayuPaymentSettings;
+        private readonly PayuPaymentSettings payuPaymentSettings;
 
-        private readonly PaymentSettings _paymentSettings;
+        private readonly PaymentSettings paymentSettings;
 
-        private readonly ILogger _logger;
+        private readonly ILogger logger;
 
-        public PaymentPayuController(ISettingService settingService, IPaymentService paymentService, IOrderService orderService, IOrderProcessingService orderProcessingService, PayuPaymentSettings PayuPaymentSettings, PaymentSettings paymentSettings, ILogger _logger)
+        public PaymentPayuController(ISettingService settingService, IPaymentService paymentService, IOrderService orderService, IOrderProcessingService orderProcessingService, PayuPaymentSettings PayuPaymentSettings, PaymentSettings paymentSettings, ILogger logger)
         {
-            this._settingService = settingService;
-            this._paymentService = paymentService;
-            this._orderService = orderService;
-            this._orderProcessingService = orderProcessingService;
-            this._PayuPaymentSettings = PayuPaymentSettings;
-            this._paymentSettings = paymentSettings;
-            this._logger = _logger;
+            this.settingService = settingService;
+            this.paymentService = paymentService;
+            this.orderService = orderService;
+            this.orderProcessingService = orderProcessingService;
+            this.payuPaymentSettings = PayuPaymentSettings;
+            this.paymentSettings = paymentSettings;
+            this.logger = logger;
         }
 
         [AdminAuthorize, ChildActionOnly]
@@ -54,12 +54,12 @@ namespace Nop.Plugin.Payments.Payu.Controllers
         {
             return base.View("~/Plugins/Payments.Payu/Views/PaymentPayu/Configure.cshtml", new ConfigurationModel
             {
-                PosId = this._PayuPaymentSettings.PosId,
-                OAuthClientSecret = this._PayuPaymentSettings.OAuthClientSecret,
-                OAuthClientId = this._PayuPaymentSettings.OAuthClientId,
-                BaseUrl = this._PayuPaymentSettings.BaseUrl,
-                SecondKey = this._PayuPaymentSettings.SecondKey,
-                AdditionalFee = this._PayuPaymentSettings.AdditionalFee
+                PosId = this.payuPaymentSettings.PosId,
+                OAuthClientSecret = this.payuPaymentSettings.OAuthClientSecret,
+                OAuthClientId = this.payuPaymentSettings.OAuthClientId,
+                BaseUrl = this.payuPaymentSettings.BaseUrl,
+                SecondKey = this.payuPaymentSettings.SecondKey,
+                AdditionalFee = this.payuPaymentSettings.AdditionalFee
             });
         }
 
@@ -73,13 +73,13 @@ namespace Nop.Plugin.Payments.Payu.Controllers
             }
             else
             {
-                this._PayuPaymentSettings.PosId = model.PosId;
-                this._PayuPaymentSettings.OAuthClientSecret = model.OAuthClientSecret;
-                this._PayuPaymentSettings.OAuthClientId = model.OAuthClientId;
-                this._PayuPaymentSettings.BaseUrl = model.BaseUrl;
-                this._PayuPaymentSettings.SecondKey = model.SecondKey;
-                this._PayuPaymentSettings.AdditionalFee = model.AdditionalFee;
-                this._settingService.SaveSetting<PayuPaymentSettings>(this._PayuPaymentSettings, 0);
+                this.payuPaymentSettings.PosId = model.PosId;
+                this.payuPaymentSettings.OAuthClientSecret = model.OAuthClientSecret;
+                this.payuPaymentSettings.OAuthClientId = model.OAuthClientId;
+                this.payuPaymentSettings.BaseUrl = model.BaseUrl;
+                this.payuPaymentSettings.SecondKey = model.SecondKey;
+                this.payuPaymentSettings.AdditionalFee = model.AdditionalFee;
+                this.settingService.SaveSetting<PayuPaymentSettings>(this.payuPaymentSettings, 0);
                 result = base.View("~/Plugins/Payments.Payu/Views/PaymentPayu/Configure.cshtml", model);
             }
             return result;
@@ -106,44 +106,44 @@ namespace Nop.Plugin.Payments.Payu.Controllers
         [ValidateInput(false)]
         public async Task<HttpStatusCodeResult> Return(PayUOrderNotification notification)
         {
-            PayuPaymentProcessor processor = this._paymentService.LoadPaymentMethodBySystemName("Payments.Payu") as PayuPaymentProcessor;
+            PayuPaymentProcessor processor = this.paymentService.LoadPaymentMethodBySystemName("Payments.Payu") as PayuPaymentProcessor;
 
             var signature = this.ExtractPayUSignature(Request.Headers);
            
             await this.VerifyRequest(Request, signature);
 
             if (processor == null || 
-                !PaymentExtensions.IsPaymentMethodActive(processor, this._paymentSettings) || 
+                !PaymentExtensions.IsPaymentMethodActive(processor, this.paymentSettings) || 
                 !processor.PluginDescriptor.Installed)
             {
                 throw new NopException("Payu payments module cannot be loaded");
             }
 
-            if (String.IsNullOrEmpty(this._PayuPaymentSettings.OAuthClientSecret))
+            if (String.IsNullOrEmpty(this.payuPaymentSettings.OAuthClientSecret))
             {
                 throw new NopException("Payu client secret can't be null or empty");
             }
-            string merchantId = this._PayuPaymentSettings.PosId;
+            string merchantId = this.payuPaymentSettings.PosId;
             int localOrderNumber = Convert.ToInt32(notification.Order.ExtOrderId);
-            Order order = this._orderService.GetOrderById(localOrderNumber);
+            Order order = this.orderService.GetOrderById(localOrderNumber);
 
             switch (notification.Order.Status)
             {
                 case PayuApiOrderStatusCode.Completed:
-                    if (this._orderProcessingService.CanMarkOrderAsPaid(order))
+                    if (this.orderProcessingService.CanMarkOrderAsPaid(order))
                     {
                         order.AuthorizationTransactionId = notification.Order.OrderId;
-                        this._orderService.UpdateOrder(order);
-                        this._orderProcessingService.MarkOrderAsPaid(order);
+                        this.orderService.UpdateOrder(order);
+                        this.orderProcessingService.MarkOrderAsPaid(order);
                     }
                     break;
                 case PayuApiOrderStatusCode.Rejected:
                 case PayuApiOrderStatusCode.Canceled:
-                    if (this._orderProcessingService.CanCancelOrder(order))
+                    if (this.orderProcessingService.CanCancelOrder(order))
                     {
                         order.AuthorizationTransactionId = notification.Order.OrderId;
-                        this._orderService.UpdateOrder(order);
-                        this._orderProcessingService.CancelOrder(order, true);
+                        this.orderService.UpdateOrder(order);
+                        this.orderProcessingService.CancelOrder(order, true);
                     }
                     break;
                 default:
@@ -156,7 +156,7 @@ namespace Nop.Plugin.Payments.Payu.Controllers
         private async Task VerifyRequest(HttpRequestBase request, string signature)
         {
             var requestBody = await Request.GetBody();
-            var verificationString = String.Concat(requestBody, _PayuPaymentSettings.SecondKey);
+            var verificationString = String.Concat(requestBody, payuPaymentSettings.SecondKey);
 
             using (MD5 md5Hash = MD5.Create())
             {
