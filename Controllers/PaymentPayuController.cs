@@ -62,7 +62,7 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                 BaseUrl = this.payuPaymentSettings.BaseUrl,
                 SecondKey = this.payuPaymentSettings.SecondKey,
                 AdditionalFee = this.payuPaymentSettings.AdditionalFee,
-                TransactModeId = (int)payuPaymentSettings.TransactMode,
+                TransactModeId = payuPaymentSettings.TransactMode,
                 TransactModeValues = payuPaymentSettings.TransactMode.ToSelectList(),
                 Currency = payuPaymentSettings.Currency
             });
@@ -87,6 +87,7 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                 this.payuPaymentSettings.TransactMode = (TransactMode)model.TransactModeId;
                 this.payuPaymentSettings.Currency = model.Currency;
                 this.settingService.SaveSetting(this.payuPaymentSettings, 0);
+                model.TransactModeValues = model.TransactModeId.ToSelectList();
                 result = base.View("~/Plugins/Payments.Payu/Views/PaymentPayu/Configure.cshtml", model);
             }
             return result;

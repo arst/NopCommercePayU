@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 
 namespace Nop.Plugin.Payments.PayU.Integration.Models.Refund
 {
     public class PayuRefundResponse
     {
-        public PayuRefundResponse()
-        {
-            Errors = new List<string>();
-        }
+        [JsonProperty("orderId")]
+        public string PayuOrderId { get; set; }
 
+        [JsonProperty("status")]
         public PayuRefundStatus Status { get; set; }
 
-        public bool Success { get; set; }
+        [JsonProperty("refund")]
+        public PayuRefund Refund { get; set; }
 
-        public List<string> Errors { get; set; }
+        public bool Success => Status.StatusCode.Equals(PayuOrderStatusCode.Success, System.StringComparison.OrdinalIgnoreCase);
     }
 }

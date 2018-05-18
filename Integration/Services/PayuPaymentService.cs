@@ -52,21 +52,18 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
         {
             RestClient payuApiClient = clientFactory.GetApiClient(String.Format("/api/v2_1/orders/{0}/", order.AuthorizationTransactionId));
             RestRequest apiRequest = new RestRequest("refunds", Method.POST);
-            var refund = new PayuRefundRequest();
-
-            if (isPartial)
+            apiRequest.JsonSerializer = new RestSharpJsonNetSerializer();
+            var refund = new PayuRefundRequest()
             {
-                refund.Amount = refundAmount.ToString();
-            }
+                Refund = new PayuRefund()
+                {
+                    Amount = isPartial ? refundAmount.ToString() : null,
+                    Description = "refund"
+                }             
+            };
             apiRequest.AddParameter("application/json; charset=utf-8", apiRequest.JsonSerializer.Serialize(refund), ParameterType.RequestBody);
             apiRequest.AddHeader("Authorization", String.Concat("Bearer ", authorizationService.GetAuthToken()));
             var apiCallResult = payuApiClient.Post<PayuRefundResponse>(apiRequest);
-
-            if (apiCallResult.ResponseStatus != ResponseStatus.Completed)
-            {
-                apiCallResult.Data.Success = false;
-                apiCallResult.Data.Errors.Add("Payu service failed make a refund.");
-            }
 
             return apiCallResult.Data;
         }

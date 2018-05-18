@@ -135,11 +135,11 @@ namespace Nop.Plugin.Payments.Payu
 
             if (refundResult.Success)
             {
-                result.NewPaymentStatus = PaymentStatus.Paid;
+                result.NewPaymentStatus = PaymentStatus.Refunded;
             }
             else
             {
-                result.Errors.Concat(refundResult.Errors);
+                result.Errors.Add(refundResult.Status.StatusDescription);
             }
 
             return result;

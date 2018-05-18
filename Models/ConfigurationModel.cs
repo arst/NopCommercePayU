@@ -56,7 +56,7 @@ namespace Nop.Plugin.Payments.PayU.Models
             set;
         }
 
-        public int TransactModeId
+        public TransactMode TransactModeId
         {
             get;
             set;

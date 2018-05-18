@@ -82,6 +82,7 @@
     <Compile Include="Integration\Models\Capture\PayuCaptureResultStatus.cs" />
     <Compile Include="Integration\Models\Payment\PayUOrderStatus.cs" />
     <Compile Include="Integration\Models\PayuOrderStatusCode.cs" />
+    <Compile Include="Integration\Models\Refund\PayuRefund.cs" />
     <Compile Include="Integration\Models\Refund\PayuRefundRequest.cs" />
     <Compile Include="Integration\Models\Refund\PayuRefundResponse.cs" />
     <Compile Include="Integration\Models\Refund\PayuRefundStatus.cs" />
