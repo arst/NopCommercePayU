@@ -1,4 +1,18 @@
-﻿using System;
+﻿using Nop.Core;
+using Nop.Core.Domain.Orders;
+using Nop.Core.Domain.Payments;
+using Nop.Plugin.Payments.PayU;
+using Nop.Plugin.Payments.PayU.Infrastructure;
+using Nop.Plugin.Payments.PayU.Integration.Models;
+using Nop.Plugin.Payments.PayU.Integration.Models.Payment;
+using Nop.Plugin.Payments.PayU.Models;
+using Nop.Services;
+using Nop.Services.Configuration;
+using Nop.Services.Logging;
+using Nop.Services.Orders;
+using Nop.Services.Payments;
+using Nop.Web.Framework.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Security;
@@ -7,18 +21,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Nop.Core;
-using Nop.Core.Domain.Orders;
-using Nop.Core.Domain.Payments;
-using Nop.Plugin.Payments.PayU.Infrastructure;
-using Nop.Plugin.Payments.PayU.Integration.Models;
-using Nop.Plugin.Payments.PayU.Integration.Models.Payment;
-using Nop.Plugin.Payments.PayU.Models;
-using Nop.Services.Configuration;
-using Nop.Services.Logging;
-using Nop.Services.Orders;
-using Nop.Services.Payments;
-using Nop.Web.Framework.Controllers;
 
 namespace Nop.Plugin.Payments.Payu.Controllers
 {
@@ -59,7 +61,10 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                 OAuthClientId = this.payuPaymentSettings.OAuthClientId,
                 BaseUrl = this.payuPaymentSettings.BaseUrl,
                 SecondKey = this.payuPaymentSettings.SecondKey,
-                AdditionalFee = this.payuPaymentSettings.AdditionalFee
+                AdditionalFee = this.payuPaymentSettings.AdditionalFee,
+                TransactModeId = (int)payuPaymentSettings.TransactMode,
+                TransactModeValues = payuPaymentSettings.TransactMode.ToSelectList(),
+                Currency = payuPaymentSettings.Currency
             });
         }
 
@@ -79,7 +84,9 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                 this.payuPaymentSettings.BaseUrl = model.BaseUrl;
                 this.payuPaymentSettings.SecondKey = model.SecondKey;
                 this.payuPaymentSettings.AdditionalFee = model.AdditionalFee;
-                this.settingService.SaveSetting<PayuPaymentSettings>(this.payuPaymentSettings, 0);
+                this.payuPaymentSettings.TransactMode = (TransactMode)model.TransactModeId;
+                this.payuPaymentSettings.Currency = model.Currency;
+                this.settingService.SaveSetting(this.payuPaymentSettings, 0);
                 result = base.View("~/Plugins/Payments.Payu/Views/PaymentPayu/Configure.cshtml", model);
             }
             return result;
@@ -129,7 +136,7 @@ namespace Nop.Plugin.Payments.Payu.Controllers
 
             switch (notification.Order.Status)
             {
-                case PayuApiOrderStatusCode.Completed:
+                case PayuOrderStatusCode.Completed:
                     if (this.orderProcessingService.CanMarkOrderAsPaid(order))
                     {
                         order.AuthorizationTransactionId = notification.Order.OrderId;
@@ -137,8 +144,18 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                         this.orderProcessingService.MarkOrderAsPaid(order);
                     }
                     break;
-                case PayuApiOrderStatusCode.Rejected:
-                case PayuApiOrderStatusCode.Canceled:
+                case PayuOrderStatusCode.Pending:
+                    order.PaymentStatus = PaymentStatus.Pending;
+                    this.orderService.UpdateOrder(order);
+                    break;
+                case PayuOrderStatusCode.WaitingForConfirmation:
+                    if (this.orderProcessingService.CanMarkOrderAsAuthorized(order))
+                    {
+                        this.orderProcessingService.MarkAsAuthorized(order);
+                    }
+                    break;
+                case PayuOrderStatusCode.Rejected:
+                case PayuOrderStatusCode.Canceled:
                     if (this.orderProcessingService.CanCancelOrder(order))
                     {
                         order.AuthorizationTransactionId = notification.Order.OrderId;

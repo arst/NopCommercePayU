@@ -1,6 +1,7 @@
 ﻿using Nop.Web.Framework;
 using Nop.Web.Framework.Mvc;
 using System;
+using System.Web.Mvc;
 
 namespace Nop.Plugin.Payments.PayU.Models
 {
@@ -36,7 +37,7 @@ namespace Nop.Plugin.Payments.PayU.Models
 
         [NopResourceDisplayName("Plugins.Payments.Payu.SecondKey")]
         public string SecondKey
-        {  
+        {
             get;
             set;
         }
@@ -50,6 +51,19 @@ namespace Nop.Plugin.Payments.PayU.Models
 
         [NopResourceDisplayName("Plugins.Payments.Payu.Currency")]
         public string Currency
+        {
+            get;
+            set;
+        }
+
+        public int TransactModeId
+        {
+            get;
+            set;
+        }
+
+        [NopResourceDisplayName("Plugins.Payments.Payu.TransactionMode")]
+        public SelectList TransactModeValues
         {
             get;
             set;

@@ -9,5 +9,7 @@ namespace Nop.Plugin.Payments.PayU.Integration.Models.Payment
 
         [JsonProperty("redirectUri")]
         public string RedirectUri { get; set; }
+
+        public PayUOrderStatus Status { get; set; }
     }
 }

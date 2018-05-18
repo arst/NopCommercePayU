@@ -1,7 +1,6 @@
 ﻿using Nop.Core.Configuration;
-using System;
 
-namespace Nop.Plugin.Payments.Payu
+namespace Nop.Plugin.Payments.PayU
 {
     public class PayuPaymentSettings : ISettings
     {
@@ -42,6 +41,12 @@ namespace Nop.Plugin.Payments.Payu
         }
 
         public string Currency
+        {
+            get;
+            set;
+        }
+
+        public TransactMode TransactMode
         {
             get;
             set;

@@ -1,22 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Routing;
-using Nop.Core;
+﻿using Nop.Core;
 using Nop.Core.Domain.Directory;
 using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Payments;
 using Nop.Core.Infrastructure;
 using Nop.Core.Plugins;
 using Nop.Plugin.Payments.Payu.Controllers;
+using Nop.Plugin.Payments.PayU;
 using Nop.Plugin.Payments.PayU.Integration.Models;
 using Nop.Plugin.Payments.PayU.Integration.Services;
 using Nop.Services.Configuration;
 using Nop.Services.Directory;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
+using Nop.Services.Orders;
 using Nop.Services.Payments;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Routing;
 
 namespace Nop.Plugin.Payments.Payu
 {
@@ -33,7 +35,10 @@ namespace Nop.Plugin.Payments.Payu
         private readonly IWebHelper webHelper;
 
         private readonly ILogger logger;
+
         private readonly IPayuPaymentService payuPaymentService;
+
+        private readonly IOrderProcessingService orderProcessingService;
 
         public bool SupportCapture => true;
 
@@ -53,7 +58,7 @@ namespace Nop.Plugin.Payments.Payu
 
         public string PaymentMethodDescription => "PayU";
 
-        public PayuPaymentProcessor(PayuPaymentSettings payuPaymentSettings, ISettingService settingService, ICurrencyService currencyService, CurrencySettings currencySettings, IWebHelper webHelper, ILogger logger, IPayuPaymentService payuPaymentService)
+        public PayuPaymentProcessor(PayuPaymentSettings payuPaymentSettings, ISettingService settingService, ICurrencyService currencyService, CurrencySettings currencySettings, IWebHelper webHelper, ILogger logger, IPayuPaymentService payuPaymentService, IOrderProcessingService orderProcessingService)
         {
             this.payuPaymentSettings = payuPaymentSettings;
             this.settingService = settingService;
@@ -62,6 +67,7 @@ namespace Nop.Plugin.Payments.Payu
             this.webHelper = webHelper;
             this.logger = logger;
             this.payuPaymentService = payuPaymentService;
+            this.orderProcessingService = orderProcessingService;
         }
 
         public ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
@@ -76,8 +82,25 @@ namespace Nop.Plugin.Payments.Payu
 
         public void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
         {
+            if (postProcessPaymentRequest == null)
+                throw new ArgumentException(nameof(postProcessPaymentRequest));
+
             ValidatePaymentSettings();
-            var payuResponse = payuPaymentService.PlaceOrder(postProcessPaymentRequest.Order, webHelper.GetCurrentIpAddress(), GetStoreName(), new Uri(webHelper.GetCurrentIpAddress()));
+            var payuResponse = payuPaymentService.PlaceOrder(postProcessPaymentRequest.Order, webHelper.GetCurrentIpAddress(), GetStoreName(), new Uri(webHelper.GetStoreLocation()));
+
+            if (payuPaymentSettings.TransactMode == TransactMode.Authorize)
+            {
+                postProcessPaymentRequest.Order.AuthorizationTransactionId = payuResponse.OrderId;
+                postProcessPaymentRequest.Order.AuthorizationTransactionResult = payuResponse.Status.StatusCode;
+                orderProcessingService.MarkAsAuthorized(postProcessPaymentRequest.Order);
+            }
+            else if (payuPaymentSettings.TransactMode == TransactMode.AuthorizeAndCapture)
+            {
+                postProcessPaymentRequest.Order.CaptureTransactionId = payuResponse.OrderId;
+                postProcessPaymentRequest.Order.CaptureTransactionResult = payuResponse.Status.StatusCode;
+                orderProcessingService.MarkOrderAsPaid(postProcessPaymentRequest.Order);
+            }
+
             if (!String.IsNullOrEmpty(payuResponse.RedirectUri))
             {
                 HttpContext.Current.Response.Redirect(payuResponse.RedirectUri);
@@ -95,14 +118,9 @@ namespace Nop.Plugin.Payments.Payu
         {
             var captureResponse = payuPaymentService.CapturePayment(capturePaymentRequest.Order);
 
-            if (captureResponse.StatusCode.Equals(PayuApiResponseStatusCode.Success, StringComparison.OrdinalIgnoreCase))
-            {
-                capturePaymentRequest.Order.CaptureTransactionResult = captureResponse.StatusCode;
-            }
-            else
-            {
-                throw new NopException(String.Format("Capture payment failed with error: {0}", captureResponse.StatusDesc));
-            }
+            if (!captureResponse.IsSuccess)
+                throw new NopException(String.Format("Capture payment failed with error: {0}", captureResponse.Status?.StatusDesc));
+
             return new CapturePaymentResult()
             {
                 NewPaymentStatus = PaymentStatus.Paid,
@@ -220,6 +238,9 @@ namespace Nop.Plugin.Payments.Payu
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.AdditionalFee.Hint", "Enter Additional.");
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.Currency", "Your shop currency from PayU");
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.Currency.Hint", "Enter currency code from your PayU account");
+            LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.TransactionMode", "Transaction mode");
+            LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.TransactionMode.Hint", "Select transaction mode");
+
             base.Install();
         }
 
@@ -241,6 +262,9 @@ namespace Nop.Plugin.Payments.Payu
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.AdditionalFee.Hint");
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.Currency");
             LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.Currency.Hint");
+            LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.TransactionMode");
+            LocalizationExtensions.DeletePluginLocaleResource(this, "Plugins.Payments.Payu.TransactionMode.Hint");
+            
             base.Uninstall();
         }
 

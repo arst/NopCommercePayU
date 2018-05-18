@@ -9,10 +9,9 @@ namespace Nop.Plugin.Payments.PayU.Integration.Models.Capture
 {
     public class PayuCaptureOrderResponse
     {
-        [JsonProperty("statusCode")]
-        public string StatusCode { get; set; }
+        [JsonProperty("status")]
+        public PayuCaptureResultStatus Status { get; set; }
 
-        [JsonProperty("statusDesc")]
-        public string StatusDesc { get; set; }
+        public bool IsSuccess => Status.StatusCode.Equals(PayuOrderStatusCode.Success, StringComparison.OrdinalIgnoreCase);
     }
 }

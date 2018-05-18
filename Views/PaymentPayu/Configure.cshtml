@@ -17,7 +17,7 @@
                 @T("Plugins.Payments.PayU.Instructions")
                 <div class="form-group">
                     <div class="col-md-3">
-                       @Html.NopLabelFor(model => model.PosId)
+                        @Html.NopLabelFor(model => model.PosId)
                     </div>
                     <div class="col-md-9">
                         @Html.EditorFor(model => model.PosId)
@@ -76,6 +76,14 @@
                     <div class="col-md-9">
                         @Html.EditorFor(model => model.Currency)
                         @Html.ValidationMessageFor(model => model.Currency)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.TransactModeValues)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.NopDropDownListFor(model => model.TransactModeId, Model.TransactModeValues)
                     </div>
                 </div>
                 <div class="form-group">

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using Nop.Core.Domain.Orders;
 using Nop.Plugin.Payments.Payu;
+using Nop.Plugin.Payments.PayU.Infrastructure;
 using Nop.Plugin.Payments.PayU.Integration.Models;
 using Nop.Plugin.Payments.PayU.Integration.Models.Capture;
 using Nop.Plugin.Payments.PayU.Integration.Models.Payment;
 using Nop.Plugin.Payments.PayU.Integration.Models.Refund;
 using Nop.Services.Directory;
 using RestSharp;
+using RestSharp.Serializers;
 
 namespace Nop.Plugin.Payments.PayU.Integration.Services
 {
@@ -32,10 +34,10 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
         {
             var request = new PayuCaptureOrderRequest();
             request.OrderId = order.AuthorizationTransactionId;
-            request.OrderStatus = PayuApiOrderStatusCode.Completed;
-
+            request.OrderStatus = PayuOrderStatusCode.Completed;
             var payUApiClient = clientFactory.GetApiClient("api/v2_1");
             var captureRequest = new RestRequest(String.Format("orders/{0}/status", request.OrderId), Method.PUT);
+            captureRequest.JsonSerializer = new RestSharpJsonNetSerializer();
             captureRequest.AddHeader("Content-Type", "application/json");
             captureRequest.AddParameter("application/json; charset=utf-8", captureRequest.JsonSerializer.Serialize(request), ParameterType.RequestBody);
             var authenticationToken = authorizationService.GetAuthToken();
@@ -73,6 +75,7 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
         {
             var payUApiClient = clientFactory.GetApiClient("api/v2_1");
             var request = new RestRequest("orders", Method.POST);
+            request.JsonSerializer = new RestSharpJsonNetSerializer();
             request.AddHeader("Content-Type", "application/json");
             var payuOrder = PreparePayuOrder(order, customerIpAddress, storeName, storeUrl);
             request.AddParameter("application/json; charset=utf-8", request.JsonSerializer.Serialize(payuOrder), ParameterType.RequestBody);
