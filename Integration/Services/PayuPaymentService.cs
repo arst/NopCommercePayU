@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nop.Core.Domain.Orders;
-using Nop.Plugin.Payments.Payu;
 using Nop.Plugin.Payments.PayU.Infrastructure;
 using Nop.Plugin.Payments.PayU.Integration.Models;
 using Nop.Plugin.Payments.PayU.Integration.Models.Capture;
@@ -9,7 +8,6 @@ using Nop.Plugin.Payments.PayU.Integration.Models.Payment;
 using Nop.Plugin.Payments.PayU.Integration.Models.Refund;
 using Nop.Services.Directory;
 using RestSharp;
-using RestSharp.Serializers;
 
 namespace Nop.Plugin.Payments.PayU.Integration.Services
 {
@@ -36,13 +34,7 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
             request.OrderId = order.AuthorizationTransactionId;
             request.OrderStatus = PayuOrderStatusCode.Completed;
             var payUApiClient = clientFactory.GetApiClient("api/v2_1");
-            var captureRequest = new RestRequest(String.Format("orders/{0}/status", request.OrderId), Method.PUT);
-            captureRequest.JsonSerializer = new RestSharpJsonNetSerializer();
-            captureRequest.AddHeader("Content-Type", "application/json");
-            captureRequest.AddParameter("application/json; charset=utf-8", captureRequest.JsonSerializer.Serialize(request), ParameterType.RequestBody);
-            var authenticationToken = authorizationService.GetAuthToken();
-            captureRequest.AddHeader("Authorization", String.Concat("Bearer ", authenticationToken));
-
+            var captureRequest = ResolvePreConfiguredRequest(String.Format("orders/{0}/status", request.OrderId), Method.PUT, request);
             var orderResponse = payUApiClient.Put<PayuCaptureOrderResponse>(captureRequest);
 
             return orderResponse.Data;
@@ -51,19 +43,16 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
         public PayuRefundResponse RequestRefund(Order order, decimal refundAmount, bool isPartial)
         {
             RestClient payuApiClient = clientFactory.GetApiClient(String.Format("/api/v2_1/orders/{0}/", order.AuthorizationTransactionId));
-            RestRequest apiRequest = new RestRequest("refunds", Method.POST);
-            apiRequest.JsonSerializer = new RestSharpJsonNetSerializer();
             var refund = new PayuRefundRequest()
             {
                 Refund = new PayuRefund()
                 {
                     Amount = isPartial ? refundAmount.ToString() : null,
                     Description = "refund"
-                }             
+                }
             };
-            apiRequest.AddParameter("application/json; charset=utf-8", apiRequest.JsonSerializer.Serialize(refund), ParameterType.RequestBody);
-            apiRequest.AddHeader("Authorization", String.Concat("Bearer ", authorizationService.GetAuthToken()));
-            var apiCallResult = payuApiClient.Post<PayuRefundResponse>(apiRequest);
+            var request = ResolvePreConfiguredRequest("refunds", Method.POST, refund);
+            var apiCallResult = payuApiClient.Post<PayuRefundResponse>(request);
 
             return apiCallResult.Data;
         }
@@ -71,13 +60,8 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
         public PayuOrderResponse PlaceOrder(Order order, string customerIpAddress, string storeName, Uri storeUrl)
         {
             var payUApiClient = clientFactory.GetApiClient("api/v2_1");
-            var request = new RestRequest("orders", Method.POST);
-            request.JsonSerializer = new RestSharpJsonNetSerializer();
-            request.AddHeader("Content-Type", "application/json");
-            var payuOrder = PreparePayuOrder(order, customerIpAddress, storeName, storeUrl);
-            request.AddParameter("application/json; charset=utf-8", request.JsonSerializer.Serialize(payuOrder), ParameterType.RequestBody);
-            var authenticationToken = authorizationService.GetAuthToken();
-            request.AddHeader("Authorization", String.Concat("Bearer ", authenticationToken));
+            var payuOrder = ResolvePayuOrder(order, customerIpAddress, storeName, storeUrl);
+            var request = ResolvePreConfiguredRequest("orders", Method.POST, payuOrder);
             var orderResponse = payUApiClient.Post<PayuOrderResponse>(request);
 
             if (orderResponse.ResponseStatus != ResponseStatus.Completed)
@@ -88,7 +72,7 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
             return orderResponse.Data;
         }
 
-        private PayuOrder PreparePayuOrder(Order order, string customerIpAddress, string storeName, Uri storeUrl)
+        private PayuOrder ResolvePayuOrder(Order order, string customerIpAddress, string storeName, Uri storeUrl)
         {
             PayuOrder result = new PayuOrder();
             var currencyForPayuOrder = currencyService.GetCurrencyByCode(paymentSettings.Currency);
@@ -128,6 +112,16 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
             return result;
         }
 
-        
+        private RestRequest ResolvePreConfiguredRequest(string url, Method method, object payload)
+        {
+            var request = new RestRequest(url, method);
+            request.JsonSerializer = new RestSharpJsonNetSerializer();
+            request.AddHeader("Content-Type", "application/json");
+            request.AddParameter("application/json; charset=utf-8", request.JsonSerializer.Serialize(payload), ParameterType.RequestBody);
+            var authenticationToken = authorizationService.GetAuthToken();
+            request.AddHeader("Authorization", String.Concat("Bearer ", authenticationToken));
+
+            return request;
+        }
     }
 }
