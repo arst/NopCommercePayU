@@ -9,7 +9,6 @@ using System.Web;
 using System.Web.Mvc;
 using Nop.Core;
 using Nop.Core.Domain.Payments;
-using Nop.Plugin.Payments.PayuRedirect;
 using Nop.Plugin.Payments.PayuRedirect.Infrastructure;
 using Nop.Plugin.Payments.PayuRedirect.Integration.Models;
 using Nop.Plugin.Payments.PayuRedirect.Integration.Models.Payment;

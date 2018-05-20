@@ -9,7 +9,6 @@ using Nop.Core.Domain.Payments;
 using Nop.Core.Infrastructure;
 using Nop.Core.Plugins;
 using Nop.Plugin.Payments.PayuRedirect.Controllers;
-using Nop.Plugin.Payments.PayuRedirect;
 using Nop.Plugin.Payments.PayuRedirect.Integration.Services;
 using Nop.Services.Configuration;
 using Nop.Services.Directory;
