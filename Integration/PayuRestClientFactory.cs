@@ -1,5 +1,4 @@
 ﻿using System;
-using Nop.Plugin.Payments.Payu;
 using RestSharp;
 
 namespace Nop.Plugin.Payments.PayU.Integration

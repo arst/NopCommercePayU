@@ -1,4 +1,8 @@
-﻿using Nop.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Web;
+using System.Web.Routing;
+using Nop.Core;
 using Nop.Core.Domain.Directory;
 using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Payments;
@@ -6,7 +10,6 @@ using Nop.Core.Infrastructure;
 using Nop.Core.Plugins;
 using Nop.Plugin.Payments.Payu.Controllers;
 using Nop.Plugin.Payments.PayU;
-using Nop.Plugin.Payments.PayU.Integration.Models;
 using Nop.Plugin.Payments.PayU.Integration.Services;
 using Nop.Services.Configuration;
 using Nop.Services.Directory;
@@ -14,11 +17,6 @@ using Nop.Services.Localization;
 using Nop.Services.Logging;
 using Nop.Services.Orders;
 using Nop.Services.Payments;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Routing;
 
 namespace Nop.Plugin.Payments.Payu
 {

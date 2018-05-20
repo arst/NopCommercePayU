@@ -1,7 +1,6 @@
-﻿using Nop.Web.Framework;
+﻿using System.Web.Mvc;
+using Nop.Web.Framework;
 using Nop.Web.Framework.Mvc;
-using System;
-using System.Web.Mvc;
 
 namespace Nop.Plugin.Payments.PayU.Models
 {
