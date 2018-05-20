@@ -298,7 +298,6 @@ namespace Nop.Plugin.Payments.Payu
                 throw new ArgumentNullException("You must setup oauth client id before using this payment method");
             }
 
-
             if (String.IsNullOrEmpty(payuPaymentSettings.PosId))
             {
                 throw new ArgumentNullException("You must setup PoS ID before using this payment method");

@@ -2,7 +2,7 @@
 
 namespace Nop.Plugin.Payments.PayU.Integration.Models.Payment
 {
-    public class PayUBuyer
+    public class PayuBuyer
     {
         [JsonProperty("email")]
         public string Email { get; set; }

@@ -1,5 +1,13 @@
-﻿using Nop.Core;
-using Nop.Core.Domain.Orders;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Security;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using Nop.Core;
 using Nop.Core.Domain.Payments;
 using Nop.Plugin.Payments.PayU;
 using Nop.Plugin.Payments.PayU.Infrastructure;
@@ -12,15 +20,6 @@ using Nop.Services.Logging;
 using Nop.Services.Orders;
 using Nop.Services.Payments;
 using Nop.Web.Framework.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Security;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 
 namespace Nop.Plugin.Payments.Payu.Controllers
 {
@@ -72,6 +71,7 @@ namespace Nop.Plugin.Payments.Payu.Controllers
         public ActionResult Configure(ConfigurationModel model)
         {
             ActionResult result;
+
             if (!base.ModelState.IsValid)
             {
                 result = this.Configure();
@@ -84,7 +84,7 @@ namespace Nop.Plugin.Payments.Payu.Controllers
                 this.payuPaymentSettings.BaseUrl = model.BaseUrl;
                 this.payuPaymentSettings.SecondKey = model.SecondKey;
                 this.payuPaymentSettings.AdditionalFee = model.AdditionalFee;
-                this.payuPaymentSettings.TransactMode = (TransactMode)model.TransactModeId;
+                this.payuPaymentSettings.TransactMode = model.TransactModeId;
                 this.payuPaymentSettings.Currency = model.Currency;
                 this.settingService.SaveSetting(this.payuPaymentSettings, 0);
                 model.TransactModeValues = model.TransactModeId.ToSelectList();
@@ -112,16 +112,16 @@ namespace Nop.Plugin.Payments.Payu.Controllers
         }
 
         [ValidateInput(false)]
-        public async Task<HttpStatusCodeResult> Return(PayUOrderNotification notification)
+        public async Task<HttpStatusCodeResult> Return(PayuOrderNotification notification)
         {
             PayuPaymentProcessor processor = this.paymentService.LoadPaymentMethodBySystemName("Payments.Payu") as PayuPaymentProcessor;
 
             var signature = this.ExtractPayUSignature(Request.Headers);
-           
+
             await this.VerifyRequest(Request, signature);
 
-            if (processor == null || 
-                !PaymentExtensions.IsPaymentMethodActive(processor, this.paymentSettings) || 
+            if (processor == null ||
+                !PaymentExtensions.IsPaymentMethodActive(processor, this.paymentSettings) ||
                 !processor.PluginDescriptor.Installed)
             {
                 throw new NopException("Payu payments module cannot be loaded");
@@ -131,9 +131,9 @@ namespace Nop.Plugin.Payments.Payu.Controllers
             {
                 throw new NopException("Payu client secret can't be null or empty");
             }
-            string merchantId = this.payuPaymentSettings.PosId;
-            int localOrderNumber = Convert.ToInt32(notification.Order.ExtOrderId);
-            Order order = this.orderService.GetOrderById(localOrderNumber);
+            var merchantId = this.payuPaymentSettings.PosId;
+            var localOrderNumber = Convert.ToInt32(notification.Order.ExtOrderId);
+            var order = this.orderService.GetOrderById(localOrderNumber);
 
             switch (notification.Order.Status)
             {

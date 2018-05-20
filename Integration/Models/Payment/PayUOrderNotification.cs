@@ -1,7 +1,7 @@
 ﻿namespace Nop.Plugin.Payments.PayU.Integration.Models.Payment
 {
-    public class PayUOrderNotification
+    public class PayuOrderNotification
     {
-        public PayUNotificationOrder Order { get; set; }
+        public PayuNotificationOrder Order { get; set; }
     }
 }

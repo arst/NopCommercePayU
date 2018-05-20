@@ -68,7 +68,7 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
             return apiCallResult.Data;
         }
 
-        public PayUOrderResponse PlaceOrder(Order order, string customerIpAddress, string storeName, Uri storeUrl)
+        public PayuOrderResponse PlaceOrder(Order order, string customerIpAddress, string storeName, Uri storeUrl)
         {
             var payUApiClient = clientFactory.GetApiClient("api/v2_1");
             var request = new RestRequest("orders", Method.POST);
@@ -78,7 +78,7 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
             request.AddParameter("application/json; charset=utf-8", request.JsonSerializer.Serialize(payuOrder), ParameterType.RequestBody);
             var authenticationToken = authorizationService.GetAuthToken();
             request.AddHeader("Authorization", String.Concat("Bearer ", authenticationToken));
-            var orderResponse = payUApiClient.Post<PayUOrderResponse>(request);
+            var orderResponse = payUApiClient.Post<PayuOrderResponse>(request);
 
             if (orderResponse.ResponseStatus != ResponseStatus.Completed)
             {
@@ -88,9 +88,9 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
             return orderResponse.Data;
         }
 
-        private PayUOrder PreparePayuOrder(Order order, string customerIpAddress, string storeName, Uri storeUrl)
+        private PayuOrder PreparePayuOrder(Order order, string customerIpAddress, string storeName, Uri storeUrl)
         {
-            PayUOrder result = new PayUOrder();
+            PayuOrder result = new PayuOrder();
             var currencyForPayuOrder = currencyService.GetCurrencyByCode(paymentSettings.Currency);
 
             if (currencyForPayuOrder == null)
@@ -106,7 +106,7 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
             result.NotifyUrl = new Uri(storeUrl, NotifyRelativeUrl).ToString();
             result.TotalAmount = (int)(order.OrderTotal * 100);
             //PayU Order buyer
-            result.Buyer = new PayUBuyer()
+            result.Buyer = new PayuBuyer()
             {
                 Email = order.BillingAddress.Email,
                 FirstName = order.BillingAddress.FirstName,
@@ -114,10 +114,10 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
                 Phone = order.BillingAddress.PhoneNumber
             };
             //PayU Order products
-            List<PayUProduct> products = new List<PayUProduct>();
+            List<PayuProduct> products = new List<PayuProduct>();
             foreach (var orderItem in order.OrderItems)
             {
-                PayUProduct product = new PayUProduct();
+                PayuProduct product = new PayuProduct();
                 product.Name = orderItem.Product.Name;
                 product.Quantity = orderItem.Quantity;
                 product.UnitPrice = (int)(orderItem.Product.Price * 100);

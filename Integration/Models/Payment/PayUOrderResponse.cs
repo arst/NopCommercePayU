@@ -3,13 +3,15 @@
 namespace Nop.Plugin.Payments.PayU.Integration.Models.Payment
 {
 
-    public class PayUOrderResponse
+    public class PayuOrderResponse
     {
+        [JsonProperty("orderId")]
         public string OrderId { get; set; }
 
         [JsonProperty("redirectUri")]
         public string RedirectUri { get; set; }
 
-        public PayUOrderStatus Status { get; set; }
+        [JsonProperty("status")]
+        public PayuOrderStatus Status { get; set; }
     }
 }

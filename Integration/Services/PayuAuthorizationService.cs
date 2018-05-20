@@ -23,7 +23,7 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
             securityRequest.AddParameter("grant_type", "client_credentials");
             securityRequest.AddParameter("client_id", payuPaymentSettings.PosId);
             securityRequest.AddParameter("client_secret", payuPaymentSettings.OAuthClientSecret);
-            var response = securityClient.Execute<PayUAuthorizationResponse>(securityRequest);
+            var response = securityClient.Execute<PayuAuthorizationResponse>(securityRequest);
             var accToken = response.Data.AccessToken;
 
             if (string.IsNullOrEmpty(accToken))

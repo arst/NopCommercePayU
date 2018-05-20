@@ -2,7 +2,7 @@
 
 namespace Nop.Plugin.Payments.PayU.Integration.Models.Payment
 {
-    public class PayUNotificationOrder
+    public class PayuNotificationOrder
     {
         public string OrderId { get; set; }
         public string ExtOrderId { get; set; }

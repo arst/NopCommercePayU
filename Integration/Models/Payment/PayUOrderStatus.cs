@@ -1,7 +1,10 @@
-﻿namespace Nop.Plugin.Payments.PayU.Integration.Models.Payment
+﻿using Newtonsoft.Json;
+
+namespace Nop.Plugin.Payments.PayU.Integration.Models.Payment
 {
-    public class PayUOrderStatus
+    public class PayuOrderStatus
     {
+        [JsonProperty("statusCode")]
         public string StatusCode { get; set; }
 
         public bool IsSuccess => StatusCode.Equals(PayuOrderStatusCode.Success, System.StringComparison.OrdinalIgnoreCase);

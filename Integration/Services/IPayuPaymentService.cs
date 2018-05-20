@@ -8,7 +8,7 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
 {
     public interface IPayuPaymentService
     {
-        PayUOrderResponse PlaceOrder(Order order, string customerIpAddress, string storeName, Uri storeUrl);
+        PayuOrderResponse PlaceOrder(Order order, string customerIpAddress, string storeName, Uri storeUrl);
 
         PayuRefundResponse RequestRefund(Order order, decimal refundAmount, bool isPartial);
 

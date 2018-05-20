@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Nop.Plugin.Payments.PayU.Integration.Models.Payment
 {
-    class PayUOrder
+    class PayuOrder
     {
         [JsonProperty("notifyUrl")]
         public string NotifyUrl { get; set; }
@@ -27,9 +27,9 @@ namespace Nop.Plugin.Payments.PayU.Integration.Models.Payment
         public string ExtOrderId { get; set; }
 
         [JsonProperty("buyer")]
-        public PayUBuyer Buyer { get; set; }
+        public PayuBuyer Buyer { get; set; }
 
         [JsonProperty("products")]
-        public List<PayUProduct> Products { get; set; }
+        public List<PayuProduct> Products { get; set; }
     }
 }

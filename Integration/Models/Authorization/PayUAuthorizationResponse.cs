@@ -2,7 +2,7 @@
 
 namespace Nop.Plugin.Payments.PayU.Integration.Models.Authorization
 {
-    class PayUAuthorizationResponse
+    class PayuAuthorizationResponse
     {
         [JsonProperty("Access_token")]
         public string AccessToken { get; set; }
