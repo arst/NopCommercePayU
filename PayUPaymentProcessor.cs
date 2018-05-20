@@ -222,7 +222,15 @@ namespace Nop.Plugin.Payments.Payu
                 OAuthClientId = ""
             };
             this.settingService.SaveSetting<PayuPaymentSettings>(settings, 0);
-            LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.PayU.Instructions", "");
+            LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.PayU.Instructions", @"
+                <p>
+                    For plugin configuration follow these steps:<br />
+                    <br />
+                    1. You will need a PayU Merchant account. If you don't already have one, you can sign up here: <a href=""https://corporate.payu.com/"" target=""_blank"">https://corporate.payu.com/</a><br />
+                    2. Copy Pos ID, OAuth Client Id, OAuth Client Secret, Second Key from your PayU store into corresponding field
+                    3. Make sure that the code of the currency of your PayU account is the same as the active currency of yours store.
+                    4. Fill in the remaining fields and save to complete the configuration.<br />
+                </p>");
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.RedirectionTip", "You will be redirected to Payu site to complete the order.");
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.PosId", "PoS ID");
             LocalizationExtensions.AddOrUpdatePluginLocaleResource(this, "Plugins.Payments.Payu.PosId.Hint", "Enter PoS ID provided by PayU.");
