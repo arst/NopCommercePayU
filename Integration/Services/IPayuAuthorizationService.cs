@@ -1,4 +1,4 @@
-﻿namespace Nop.Plugin.Payments.PayU.Integration.Services
+﻿namespace Nop.Plugin.Payments.PayuRedirect.Integration.Services
 {
     internal interface IPayuAuthorizationService
     {

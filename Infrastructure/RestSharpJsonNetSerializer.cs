@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using RestSharp.Serializers;
 
-namespace Nop.Plugin.Payments.PayU.Infrastructure
+namespace Nop.Plugin.Payments.PayuRedirect.Infrastructure
 {
     public class RestSharpJsonNetSerializer : ISerializer
     {

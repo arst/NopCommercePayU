@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nop.Plugin.Payments.PayU.Integration.Models
+namespace Nop.Plugin.Payments.PayuRedirect.Integration.Models
 {
     internal static class PayuOrderStatusCode
     {

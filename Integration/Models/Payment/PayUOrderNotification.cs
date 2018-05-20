@@ -1,4 +1,4 @@
-﻿namespace Nop.Plugin.Payments.PayU.Integration.Models.Payment
+﻿namespace Nop.Plugin.Payments.PayuRedirect.Integration.Models.Payment
 {
     public class PayuOrderNotification
     {

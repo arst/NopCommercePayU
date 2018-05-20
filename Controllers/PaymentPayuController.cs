@@ -9,11 +9,11 @@ using System.Web;
 using System.Web.Mvc;
 using Nop.Core;
 using Nop.Core.Domain.Payments;
-using Nop.Plugin.Payments.PayU;
-using Nop.Plugin.Payments.PayU.Infrastructure;
-using Nop.Plugin.Payments.PayU.Integration.Models;
-using Nop.Plugin.Payments.PayU.Integration.Models.Payment;
-using Nop.Plugin.Payments.PayU.Models;
+using Nop.Plugin.Payments.PayuRedirect;
+using Nop.Plugin.Payments.PayuRedirect.Infrastructure;
+using Nop.Plugin.Payments.PayuRedirect.Integration.Models;
+using Nop.Plugin.Payments.PayuRedirect.Integration.Models.Payment;
+using Nop.Plugin.Payments.PayuRedirect.Models;
 using Nop.Services;
 using Nop.Services.Configuration;
 using Nop.Services.Logging;
@@ -21,7 +21,7 @@ using Nop.Services.Orders;
 using Nop.Services.Payments;
 using Nop.Web.Framework.Controllers;
 
-namespace Nop.Plugin.Payments.Payu.Controllers
+namespace Nop.Plugin.Payments.PayuRedirect.Controllers
 {
     public class PaymentPayuController : BasePaymentController
     {

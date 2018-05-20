@@ -2,7 +2,7 @@
 using Nop.Web.Framework;
 using Nop.Web.Framework.Mvc;
 
-namespace Nop.Plugin.Payments.PayU.Models
+namespace Nop.Plugin.Payments.PayuRedirect.Models
 {
     public class ConfigurationModel : BaseNopModel
     {

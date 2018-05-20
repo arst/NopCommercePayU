@@ -1,4 +1,4 @@
-﻿namespace Nop.Plugin.Payments.PayU
+﻿namespace Nop.Plugin.Payments.PayuRedirect
 {
     public enum TransactMode
     {

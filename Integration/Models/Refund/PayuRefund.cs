@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace Nop.Plugin.Payments.PayU.Integration.Models.Refund
+namespace Nop.Plugin.Payments.PayuRedirect.Integration.Models.Refund
 {
     public class PayuRefund
     {

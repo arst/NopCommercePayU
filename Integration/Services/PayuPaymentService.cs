@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nop.Core.Domain.Orders;
-using Nop.Plugin.Payments.PayU.Infrastructure;
-using Nop.Plugin.Payments.PayU.Integration.Models;
-using Nop.Plugin.Payments.PayU.Integration.Models.Capture;
-using Nop.Plugin.Payments.PayU.Integration.Models.Payment;
-using Nop.Plugin.Payments.PayU.Integration.Models.Refund;
+using Nop.Plugin.Payments.PayuRedirect.Infrastructure;
+using Nop.Plugin.Payments.PayuRedirect.Integration.Models;
+using Nop.Plugin.Payments.PayuRedirect.Integration.Models.Capture;
+using Nop.Plugin.Payments.PayuRedirect.Integration.Models.Payment;
+using Nop.Plugin.Payments.PayuRedirect.Integration.Models.Refund;
 using Nop.Services.Directory;
 using RestSharp;
 
-namespace Nop.Plugin.Payments.PayU.Integration.Services
+namespace Nop.Plugin.Payments.PayuRedirect.Integration.Services
 {
     internal class PayuPaymentService : IPayuPaymentService
     {
@@ -87,7 +87,7 @@ namespace Nop.Plugin.Payments.PayU.Integration.Services
             result.Description = String.Format("Order from {0}", storeName);
             result.ExtOrderId = order.Id.ToString();
             result.MerchantPosId = paymentSettings.PosId;
-            result.NotifyUrl = new Uri(storeUrl, NotifyRelativeUrl).ToString();
+            result.NotifyUrl = "https://webhook.site/96e0a1aa-bf6c-438b-baf3-ce75cca9a78b"; //new Uri(storeUrl, NotifyRelativeUrl).ToString();
             result.TotalAmount = (int)(order.OrderTotal * 100);
             //PayU Order buyer
             result.Buyer = new PayuBuyer()

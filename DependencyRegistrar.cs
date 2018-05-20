@@ -2,10 +2,10 @@
 using Nop.Core.Configuration;
 using Nop.Core.Infrastructure;
 using Nop.Core.Infrastructure.DependencyManagement;
-using Nop.Plugin.Payments.PayU.Integration;
-using Nop.Plugin.Payments.PayU.Integration.Services;
+using Nop.Plugin.Payments.PayuRedirect.Integration;
+using Nop.Plugin.Payments.PayuRedirect.Integration.Services;
 
-namespace Nop.Plugin.Payments.PayU
+namespace Nop.Plugin.Payments.PayuRedirect
 {
     class DependencyRegistrar : IDependencyRegistrar
     {

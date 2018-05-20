@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Nop.Plugin.Payments.PayU.Integration.Models.Capture
+namespace Nop.Plugin.Payments.PayuRedirect.Integration.Models.Capture
 {
     class PayuCaptureOrderRequest
     {

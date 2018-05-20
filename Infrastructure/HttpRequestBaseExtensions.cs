@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 
-namespace Nop.Plugin.Payments.PayU.Infrastructure
+namespace Nop.Plugin.Payments.PayuRedirect.Infrastructure
 {
     public static class HttpRequestBaseExtensions
     {

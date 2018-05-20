@@ -8,9 +8,9 @@ using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Payments;
 using Nop.Core.Infrastructure;
 using Nop.Core.Plugins;
-using Nop.Plugin.Payments.Payu.Controllers;
-using Nop.Plugin.Payments.PayU;
-using Nop.Plugin.Payments.PayU.Integration.Services;
+using Nop.Plugin.Payments.PayuRedirect.Controllers;
+using Nop.Plugin.Payments.PayuRedirect;
+using Nop.Plugin.Payments.PayuRedirect.Integration.Services;
 using Nop.Services.Configuration;
 using Nop.Services.Directory;
 using Nop.Services.Localization;
@@ -18,7 +18,7 @@ using Nop.Services.Logging;
 using Nop.Services.Orders;
 using Nop.Services.Payments;
 
-namespace Nop.Plugin.Payments.Payu
+namespace Nop.Plugin.Payments.PayuRedirect
 {
     public class PayuPaymentProcessor : BasePlugin, IPaymentMethod, IPlugin
     {

@@ -1,6 +1,6 @@
 ﻿using Nop.Core.Configuration;
 
-namespace Nop.Plugin.Payments.PayU
+namespace Nop.Plugin.Payments.PayuRedirect
 {
     public class PayuPaymentSettings : ISettings
     {

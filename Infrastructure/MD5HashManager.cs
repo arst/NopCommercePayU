@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Nop.Plugin.Payments.PayU.Infrastructure
+namespace Nop.Plugin.Payments.PayuRedirect.Infrastructure
 {
     static class MD5HashManager
     {

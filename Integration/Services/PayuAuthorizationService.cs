@@ -1,9 +1,9 @@
 ﻿using System.Security;
 using Nop.Plugin.Payments.Payu;
-using Nop.Plugin.Payments.PayU.Integration.Models.Authorization;
+using Nop.Plugin.Payments.PayuRedirect.Integration.Models.Authorization;
 using RestSharp;
 
-namespace Nop.Plugin.Payments.PayU.Integration.Services
+namespace Nop.Plugin.Payments.PayuRedirect.Integration.Services
 {
     public class PayuAuthorizationService : IPayuAuthorizationService
     {

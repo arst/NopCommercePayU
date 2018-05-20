@@ -1,10 +1,10 @@
 ﻿using System;
 using Nop.Core.Domain.Orders;
-using Nop.Plugin.Payments.PayU.Integration.Models.Capture;
-using Nop.Plugin.Payments.PayU.Integration.Models.Payment;
-using Nop.Plugin.Payments.PayU.Integration.Models.Refund;
+using Nop.Plugin.Payments.PayuRedirect.Integration.Models.Capture;
+using Nop.Plugin.Payments.PayuRedirect.Integration.Models.Payment;
+using Nop.Plugin.Payments.PayuRedirect.Integration.Models.Refund;
 
-namespace Nop.Plugin.Payments.PayU.Integration.Services
+namespace Nop.Plugin.Payments.PayuRedirect.Integration.Services
 {
     public interface IPayuPaymentService
     {

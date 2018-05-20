@@ -1,6 +1,6 @@
 ﻿using RestSharp;
 
-namespace Nop.Plugin.Payments.PayU.Integration
+namespace Nop.Plugin.Payments.PayuRedirect.Integration
 {
     public interface IPayuRestClientFactory
     {
