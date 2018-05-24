@@ -87,7 +87,7 @@ namespace Nop.Plugin.Payments.PayuRedirect.Integration.Services
             result.Description = String.Format("Order from {0}", storeName);
             result.ExtOrderId = order.Id.ToString();
             result.MerchantPosId = paymentSettings.PosId;
-            result.NotifyUrl = "https://webhook.site/96e0a1aa-bf6c-438b-baf3-ce75cca9a78b"; //new Uri(storeUrl, NotifyRelativeUrl).ToString();
+            result.NotifyUrl = new Uri(storeUrl, NotifyRelativeUrl).ToString();
             result.TotalAmount = (int)(order.OrderTotal * 100);
             //PayU Order buyer
             result.Buyer = new PayuBuyer()
